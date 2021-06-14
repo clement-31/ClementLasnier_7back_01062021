@@ -1,5 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const xssClean = require("xss-clean");
+const helmet = require("helmet");
+
 
 const userRoutes = require('./routes/users');
 const forumRoutes = require('./routes/forum');
@@ -23,6 +26,8 @@ app.use((req, res, next) => {
 
 app.use (express.json ());
 
+app.use(xssClean());
+app.use(helmet());
 
 //Routes
 app.use('/api/users', userRoutes);
