@@ -4,7 +4,7 @@
   "description": "partie backend P7 OC Developpeur web",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "nodemon server.js"
   },
   "author": "Clement Lasnier",
   "license": "ISC",
