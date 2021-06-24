@@ -2,20 +2,25 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const xssClean = require("xss-clean");
 const helmet = require("helmet");
-
-
-const userRoutes = require('./routes/users');
-const forumRoutes = require('./routes/forum');
-const commentaireRoutes = require('./routes/commentaire');
-
-
-//config multer
 const path = require('path');
+require('dotenv').config();
 
 const app = express();
 
+
+
+const userRoutes = require('./routes/user');
+const postRoutes = require('./routes/post');
+const commentaireRoutes = require('./routes/comment');
+
+
+
+
+
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
 //1er middleware : CORS
-//========================
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', 'X-Auth-Token, X-CSRF-TOKEN, Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
@@ -31,7 +36,7 @@ app.use(helmet());
 
 //Routes
 app.use('/api/users', userRoutes);
-app.use('/api/forum', forumRoutes);
+app.use('/api/post', postRoutes);
 app.use('/api/commentaire', commentaireRoutes);
 
 
