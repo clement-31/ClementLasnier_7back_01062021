@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 
-const userCtrl = require('../controllers/comment');
 const auth = require('../middleware/auth');
+const userCtrl = require('../controllers/comment');
+
 
 router.get('/:userId/comment', auth, userCtrl.getAllComment);
 router.post('/:userId/comment', auth, userCtrl.newComment);
