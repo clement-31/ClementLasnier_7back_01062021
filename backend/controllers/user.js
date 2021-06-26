@@ -1,34 +1,80 @@
-const db = require('../db_connect');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const MaskData = require('maskdata');
+const UserRepository = require('../repository/user');
+require('dotenv').config();
 
-exports.newComment = (req, res, next) => {
-    db.query(`INSERT INTO comment VALUES ( NULL, ${req.params.userId}, '${req.body.content}', NOW())`, (error, result, field)=>  {
-        if (error) {
-            return res.status(400).json({
-                error
-            });
-        }
-        return res.status(200).json(result);
-    });
+let userRepository = new UserRepository();
+
+exports.signup = (req, res, next) =>{
+
+    const emailMask2Options = {
+        maskWith: "*",
+        unmaskedStartCharactersBeforeAt: 0,
+        unmaskedEndCharactersAfterAt: 0,
+        maskAtTheRate: false
+    };
+    const maskedEmail = MaskData.maskEmail2(req.body.email,emailMask2Options);
+
+    let email = maskedEmail;
+    let pseudo = req.body.pseudo;
+    let password = req.body.password;
+
+    bcrypt.hash(password, 10)
+        .then(hash => {
+            let mysqlInsert = [email, pseudo, hash];
+            userRepository.signup(mysqlInsert)
+
+                .then((response) => {
+                    res.status(201).json(JSON.stringify(response));
+
+                })
+                .catch((error) => {
+                    console.error(error);
+                    res.status(500).json({error});
+                });
+        })
+        .catch(error => res.status(500).json(
+            error));
 };
 
-exports.getAllComment = (req, res, next) => {
-    db.query(`SELECT users.userId, users.firstname, users.surname, comment.userId, comment.content, comment.createdAt FROM users INNER JOIN comment ON users.userId = comment.userId WHERE comment.postId = ${req.params.userId} ORDER BY comment.createdAt DESC`, (error, result, field) => {
-        if (error) {
-            return res.status(400).json({
-                error
-            });
-        }
-        return res.status(200).json(result)
-    });
+exports.login =  (req, res, next) => {
+
+    const emailMask2Options = {
+        maskWith: "*",
+        unmaskedStartCharactersBeforeAt: 0,
+        unmaskedEndCharactersAfterAt: 0,
+        maskAtTheRate: false
+    }
+
+    const maskedEmail = MaskData.maskEmail2(req.body.email,emailMask2Options);
+
+    let email = maskedEmail;
+    let password = req.body.password;
+    let mysqlInsert = [email];
+    userRepository.login(mysqlInsert, password)
+
+        .then((response) => {
+            res.status(200).json(JSON.stringify(response));
+        })
+        .catch((error) => {
+            res.status(500).json(error);
+        });
+
 };
 
-exports.deleteComment= (req, res, next) =>{
-    db.query(`DELETE FROM comment WHERE comment.userId = ${req.params.userId}`, (error, result, fiels) => {
-        if (error) {
-            return res.status(400).json({
-                error
-            });
-        }
-        return res.status(200).json(result)
-    });
-};
+exports.deleteAccount = (req, res, next) => {
+    const token = req.headers.authorization.split(' ')[1];
+    const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
+    const userId = decodedToken.userId;
+    let mysqlInsert = [userId];
+
+    userRepository.deleteAccount(mysqlInsert)
+        .then((response) => {
+            res.status(200).json(JSON.stringify(response));
+        })
+        .catch((error) => {
+            console.log(error);
+            res.status(500).json(error);
+        });
+    }
