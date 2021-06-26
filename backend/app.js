@@ -3,17 +3,14 @@ const bodyParser = require('body-parser');
 const xssClean = require("xss-clean");
 const helmet = require("helmet");
 const path = require('path');
-require('dotenv').config();
+require('dotenv').config({path: '.env'});
 
 const app = express();
 
 
-
 const userRoutes = require('./routes/user');
 const postRoutes = require('./routes/post');
-const commentaireRoutes = require('./routes/comment');
-
-
+const commentRoutes = require('./routes/comment');
 
 
 
@@ -29,7 +26,7 @@ app.use((req, res, next) => {
 });
 
 
-app.use (express.json ());
+app.use(express.json());
 
 app.use(xssClean());
 app.use(helmet());
@@ -37,10 +34,9 @@ app.use(helmet());
 //Routes
 app.use('/api/users', userRoutes);
 app.use('/api/post', postRoutes);
-app.use('/api/commentaire', commentaireRoutes);
+app.use('/api/comment', commentRoutes);
 
 
-//Configuration multer
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
 
