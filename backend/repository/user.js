@@ -3,8 +3,6 @@ const mysql = require('mysql');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-require('dotenv').config();
-
 class UserRepository {
     constructor() {
         console.log('Hello');
@@ -36,7 +34,7 @@ class UserRepository {
                 console.log(result[0]);
 
                 if(!result[0]) {
-                    reject({ message: 'Impossible de vous trouver !!'});
+                    reject({ message: 'Nous ne vous avons pas trouvé !'});
                 }else {
                     bcrypt.compare(password, result[0].password)
                         .then(valid => {
@@ -63,8 +61,8 @@ class UserRepository {
         mySql = mysql.format(mySql, mysqlInsert);
         return new Promise((resolve, reject) => {
             db.query(mySql, (error, result) => {
-                if(error) return reject ({ error : 'Oops, something went wrong!!'});
-                resolve({ message : 'Nous vous avons supprimé!!'});
+                if(error) return reject ({ error : 'Something went wrong !'});
+                resolve({ message : 'Nous vous avons supprimé'});
             });
         });
     }

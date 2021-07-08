@@ -6,7 +6,8 @@ class PostRepository {
         console.log('hello');
     }
     getAllPost(){
-        let mySql = `SELECT post.userId, post.title, post.content, post.createdAt, user.pseudo FROM post JOIN user ON post.userId = userId ORDER BY post.createdAt DESC`;
+        let mySql = `SELECT post.title, post.content, post.createdAt, user.pseudo 
+                    FROM post JOIN user ON post.userId = userId ORDER BY post.createdAt DESC`;
         return new Promise((resolve) => {
             db.query(mySql, (error, result, fields) => {
                 if(error) throw error;
@@ -55,7 +56,7 @@ class PostRepository {
         });
     }
     deletePost(mysqlInsert1, mysqlInsert2) {
-        let mySql1 = `SELECT * FROM post WHERE postId= ?`;
+        let mySql1 = `SELECT * FROM post WHERE postId=? AND userId =?`;
         mySql1 = mysql.format(mySql1, mysqlInsert1);
         return new Promise((resolve, reject) => {
             db.query(mySql1, (error, result, fields) => {
