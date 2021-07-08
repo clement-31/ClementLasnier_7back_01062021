@@ -1,12 +1,10 @@
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const MaskData = require('maskdata');
 const UserRepository = require('../repository/user');
-require('dotenv').config();
 
 let userRepository = new UserRepository();
 
-exports.signup = (req, res, next) =>{
+exports.signup = (req, res) =>{
 
     const emailMask2Options = {
         maskWith: "*",
@@ -26,7 +24,7 @@ exports.signup = (req, res, next) =>{
             userRepository.signup(mysqlInsert)
 
                 .then((response) => {
-                    res.status(201).json(JSON.stringify(response));
+                    res.status(201).json({message: "Compte créé avec succès !"});
 
                 })
                 .catch((error) => {
@@ -35,10 +33,10 @@ exports.signup = (req, res, next) =>{
                 });
         })
         .catch(error => res.status(500).json(
-            error));
+            {error}));
 };
 
-exports.login =  (req, res, next) => {
+exports.login =  (req, res) => {
 
     const emailMask2Options = {
         maskWith: "*",
@@ -55,26 +53,23 @@ exports.login =  (req, res, next) => {
     userRepository.login(mysqlInsert, password)
 
         .then((response) => {
-            res.status(200).json(JSON.stringify(response));
+            res.status(200).json({response});
         })
         .catch((error) => {
-            res.status(500).json(error);
+            res.status(500).json({error});
         });
 
 };
 
-exports.deleteAccount = (req, res, next) => {
-    const token = req.headers.authorization.split(' ')[1];
-    const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
-    const userId = decodedToken.userId;
-    let mysqlInsert = [userId];
+exports.deleteAccount = (req, res) => {
 
     userRepository.deleteAccount(mysqlInsert)
+
         .then((response) => {
-            res.status(200).json(JSON.stringify(response));
+            res.status(200).json({response});
         })
         .catch((error) => {
             console.log(error);
             res.status(500).json(error);
         });
-    }
+};
