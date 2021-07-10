@@ -66,10 +66,9 @@ exports.deleteAccount = (req, res) => {
     userRepository.deleteAccount(mysqlInsert)
 
         .then((response) => {
-            res.status(200).json({response});
+            res.status(200).json({message : "Compte supprimé"});
         })
         .catch((error) => {
-            console.log(error);
             res.status(500).json(error);
         });
 };
